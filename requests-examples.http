@@ -1,0 +1,96 @@
+@baseUrl = http://localhost:8000/
+
+
+GET {{baseUrl}}/posts/
+Content-Type: application/json
+Authorization: Token 195c9587649b81fb9a19eeb19024f63d98790f27
+
+
+###
+
+# создание поста
+POST {{baseUrl}}/newpost/
+Content-Type: application/json
+Authorization: Token 195c9587649b81fb9a19eeb19024f63d98790f27
+
+{
+  "text": "a new post",
+  "images": ["small_django_logo.png", "small_django_logo.png"]
+}
+
+###
+
+# добавление лайка
+POST {{baseUrl}}/posts/1/like/
+Content-Type: application/json
+Authorization: Token 195c9587649b81fb9a19eeb19024f63d98790f27
+
+
+###
+
+# удаление поста
+DELETE {{baseUrl}}/posts/8/
+Content-Type: application/json
+Authorization: Token 195c9587649b81fb9a19eeb19024f63d98790f27
+
+
+###
+
+
+# изменение текста поста
+PATCH {{baseUrl}}/posts/2/
+Content-Type: application/json
+Authorization: Token 195c9587649b81fb9a19eeb19024f63d98790f27
+
+{
+  "text": "second post"
+}
+
+
+###
+
+# добавление комментария
+POST {{baseUrl}}/posts/1/comment/
+Content-Type: application/json
+Authorization: Token 195c9587649b81fb9a19eeb19024f63d98790f27
+
+{
+  "text": "new comment"
+}
+
+###
+
+
+# изменение текста комментария
+PATCH {{baseUrl}}/posts/1/comment/3
+Content-Type: application/json
+Authorization: Token 195c9587649b81fb9a19eeb19024f63d98790f27
+
+{
+  "text": "changed comment"
+}
+
+
+###
+
+
+# удаление комментария
+DELETE {{baseUrl}}/posts/1/comment/4
+Content-Type: application/json
+Authorization: Token 195c9587649b81fb9a19eeb19024f63d98790f27
+
+
+###
+
+
+# фильтрация по создателю
+GET {{baseUrl}}/posts/?creator=1
+Content-Type: application/json
+
+
+###
+
+
+# фильтрация по дате
+GET {{baseUrl}}/posts/?created_at_before=2025-01-22
+Content-Type: application/json
