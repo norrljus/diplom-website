@@ -3,7 +3,7 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from rest_framework.routers import DefaultRouter
-from posts.views import PostsViewSet, NewPost, LikeViewSet, CommentViewSet, TargetComment
+from posts.views import PostsViewSet, LikeViewSet, CommentViewSet, TargetComment
 
 router = DefaultRouter()
 router.register('posts', PostsViewSet, basename='posts')
@@ -11,7 +11,6 @@ router.register('posts', PostsViewSet, basename='posts')
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include(router.urls)),
-    path('newpost/', NewPost.as_view(), name="new_post"),
     path('posts/<int:post_id>/like/', LikeViewSet.as_view(), name="like"),
     path('posts/<int:post_id>/comment/', CommentViewSet.as_view(), name="comment"),
     path('posts/<int:post_id>/comment/<int:comm>', TargetComment.as_view(), name="tcomment"),

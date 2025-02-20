@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from posts.models import Post, Comment, Images, PostLikes
+from posts.models import Post, Comment, PostLikes
 from django.contrib.auth.models import User
 
 
@@ -26,12 +26,6 @@ class CommentSerializer(serializers.ModelSerializer):
         return data
 
 
-class ImageSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Images
-        fields = ('image',)
-
-
 class LikeSerializer(serializers.ModelSerializer):
     class Meta:
         model = PostLikes
@@ -39,15 +33,13 @@ class LikeSerializer(serializers.ModelSerializer):
 
 
 class PostSerializer(serializers.ModelSerializer):
-    images = ImageSerializer(many=True, read_only=True, source='images_set')
     author = UserSerializer(read_only=True)
     comments = CommentSerializer(many=True, read_only=True, source='comment_set')
     likes_count = serializers.SerializerMethodField()
 
-
     class Meta:
         model = Post
-        fields = ['id', 'author', 'text', 'images', 'created_at', "likes_count", 'comments']
+        fields = "__all__"
 
     def create(self, validated_data):
         validated_data["author"] = self.context["request"].user

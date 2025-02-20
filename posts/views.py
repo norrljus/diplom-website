@@ -1,11 +1,13 @@
 from django_filters import rest_framework as filters
 from rest_framework import status
+from rest_framework.parsers import JSONParser, FileUploadParser, MultiPartParser
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework.renderers import JSONRenderer, BrowsableAPIRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 from .filters import PostFilter
-from .models import Post, Images, PostLikes, User, Comment
+from .models import Post, PostLikes, User, Comment
 from .serializers import PostSerializer, LikeSerializer, CommentSerializer
 from .permissions import IsOwnerOrReadOnly
 
@@ -16,6 +18,8 @@ class PostsViewSet(ModelViewSet):
     permission_classes = [IsAuthenticated, IsOwnerOrReadOnly|IsAdminUser]
     filter_backends = (filters.DjangoFilterBackend,)
     filterset_class = PostFilter
+    parser_classes = [JSONParser, MultiPartParser, FileUploadParser]
+    renderer_classes = [JSONRenderer, BrowsableAPIRenderer]
 
     def get_permissions(self):
         if self.action in ["create", "update", "partial_update"]:
@@ -24,17 +28,6 @@ class PostsViewSet(ModelViewSet):
             return [IsOwnerOrReadOnly()]
         return []
 
-
-class NewPost(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def post(self, request):
-        text = request.data.get("text")
-        post_id = Post.objects.create(author_id=request.user.id ,text=text)
-        images = request.FILES.getlist('images')
-        for image in images:
-            Images.objects.create(image=image, post_id=post_id)
-        return Response({"message": "Успешно"})
 
 
 class LikeViewSet(APIView):
@@ -47,20 +40,23 @@ class LikeViewSet(APIView):
         like, created = PostLikes.objects.get_or_create(user_id=user, post_id=post)
         if not created:
             like.delete()
-            return Response({"message": "Лайк удален"})
-        return Response({"message": "Лайк поставлен"})
+            return Response({"message": "Лайк удален"}, status=status.HTTP_204_NO_CONTENT)
+        return Response({"message": "Лайк поставлен"}, status=status.HTTP_201_CREATED)
 
 
 class CommentViewSet(APIView):
-    serializer_class = CommentSerializer
     permission_classes = [IsAuthenticated]
 
     def post(self, request, post_id):
-        post = Post.objects.filter(id=post_id).first()
-        text = request.data.get("text")
-        user = User.objects.filter(id=request.user.id).first()
-        Comment.objects.create(post=post, text=text, author=user)
-        return Response({"message": "Комментарий создан"})
+        try:
+            post = Post.objects.filter(id=post_id).first()
+        except Post.DoesNotExist:
+            return Response({"error": "Post not found"}, status=status.HTTP_404_NOT_FOUND)
+        serializer = CommentSerializer(data=request.data, context={"request": request}, partial=True)
+        if serializer.is_valid():
+            serializer.save(author=request.user, post=post)
+            return Response({"message": "Комментарий создан"}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class TargetComment(APIView):
@@ -69,10 +65,13 @@ class TargetComment(APIView):
     def patch(self, request, post_id, comm):
         try:
             post = Post.objects.filter(id=post_id).first()
+        except Post.DoesNotExist:
+            return Response({"error": "Post not found"}, status=status.HTTP_404_NOT_FOUND)
+        try:
             comment = Comment.objects.filter(post=post, id=comm).first()
         except Comment.DoesNotExist:
             return Response({"error": "Item not found"}, status=status.HTTP_404_NOT_FOUND)
-        serializer = self.serializer_class(comment, data=request.data, partial=True)
+        serializer = self.serializer_class(comment, data=request.data, context={"request": request}, partial=True)
         self.check_object_permissions(request, comment)
         if serializer.is_valid():
             serializer.save()

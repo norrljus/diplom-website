@@ -3,35 +3,22 @@
 
 GET {{baseUrl}}/posts/
 Content-Type: application/json
-Authorization: Token 195c9587649b81fb9a19eeb19024f63d98790f27
-
-
-###
-
-# создание поста
-POST {{baseUrl}}/newpost/
-Content-Type: application/json
-Authorization: Token 195c9587649b81fb9a19eeb19024f63d98790f27
-
-{
-  "text": "a new post",
-  "images": ["small_django_logo.png", "small_django_logo.png"]
-}
+Authorization: Token 98e99a80bd41a9c4f95f562a91c740d6880a0264
 
 ###
 
 # добавление лайка
 POST {{baseUrl}}/posts/1/like/
 Content-Type: application/json
-Authorization: Token 195c9587649b81fb9a19eeb19024f63d98790f27
+Authorization: Token 98e99a80bd41a9c4f95f562a91c740d6880a0264
 
 
 ###
 
 # удаление поста
-DELETE {{baseUrl}}/posts/8/
+DELETE {{baseUrl}}/posts/2/
 Content-Type: application/json
-Authorization: Token 195c9587649b81fb9a19eeb19024f63d98790f27
+Authorization: Token 98e99a80bd41a9c4f95f562a91c740d6880a0264
 
 
 ###
@@ -40,7 +27,7 @@ Authorization: Token 195c9587649b81fb9a19eeb19024f63d98790f27
 # изменение текста поста
 PATCH {{baseUrl}}/posts/2/
 Content-Type: application/json
-Authorization: Token 195c9587649b81fb9a19eeb19024f63d98790f27
+Authorization: Token 98e99a80bd41a9c4f95f562a91c740d6880a0264
 
 {
   "text": "second post"
@@ -52,7 +39,7 @@ Authorization: Token 195c9587649b81fb9a19eeb19024f63d98790f27
 # добавление комментария
 POST {{baseUrl}}/posts/1/comment/
 Content-Type: application/json
-Authorization: Token 195c9587649b81fb9a19eeb19024f63d98790f27
+Authorization: Token 98e99a80bd41a9c4f95f562a91c740d6880a0264
 
 {
   "text": "new comment"
@@ -64,7 +51,7 @@ Authorization: Token 195c9587649b81fb9a19eeb19024f63d98790f27
 # изменение текста комментария
 PATCH {{baseUrl}}/posts/1/comment/3
 Content-Type: application/json
-Authorization: Token 195c9587649b81fb9a19eeb19024f63d98790f27
+Authorization: Token 98e99a80bd41a9c4f95f562a91c740d6880a0264
 
 {
   "text": "changed comment"
@@ -77,7 +64,7 @@ Authorization: Token 195c9587649b81fb9a19eeb19024f63d98790f27
 # удаление комментария
 DELETE {{baseUrl}}/posts/1/comment/4
 Content-Type: application/json
-Authorization: Token 195c9587649b81fb9a19eeb19024f63d98790f27
+Authorization: Token 98e99a80bd41a9c4f95f562a91c740d6880a0264
 
 
 ###
